@@ -12,19 +12,18 @@ app.use(express.json());
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  if(!authHeader){
-    return res.status(401).send({message: 'unauthorized access'})
-  } 
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
-    if(err){
-      return res.status(403).send({message: 'Forbidden Access'})
+  if (!authHeader) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden Access" });
     }
-    console.log('decoded', decoded);
+    console.log("decoded", decoded);
     req.decoded = decoded;
     next();
-  })
-  
+  });
 }
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ecv2a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -86,13 +85,13 @@ async function run() {
       const email = req.query.email;
       // console.log(email);
 
-      if(email === decodedEmail){
+      if (email === decodedEmail) {
         const query = { email: email };
         const cursor = orderCollection.find(query);
         const orders = await cursor.toArray();
         res.send(orders);
       } else {
-        res.status(403).send({message: 'Forbidden Access'})
+        res.status(403).send({ message: "Forbidden Access" });
       }
     });
 
@@ -105,6 +104,10 @@ async function run() {
   }
 }
 run().catch(console.dir);
+
+app.get("/hero", async (req, res) => {
+  res.send("Hero Meets Heroku");
+});
 
 // root
 app.get("/", (req, res) => {
